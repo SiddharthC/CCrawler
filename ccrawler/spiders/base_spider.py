@@ -15,6 +15,7 @@ class BaseSpider(BaseSpider):
     name = "base"
     start_urls = ()
     allowed_domains = []
+    items = []
 
     def __init__(self):
         # TODO: replace the root directory with constant or configuratoin value
@@ -41,23 +42,27 @@ class BaseSpider(BaseSpider):
         # Just for debugging -------------------------------------------------------------
         # inspect_response(response) # Invoking the shell from spiders to inspect responses
         # ---------------------------------------------------------------------------------
-
         hxs = HtmlXPathSelector(response)
         next_page = hxs.select("//html/body/div[3]/ul/li[3]/a/@href").extract()
-
+        title = hxs.select("//head/title/text()").extract()
         body = "".join(hxs.select('//div[contains(@class, "body")]//text()').extract())
-        print(body)
+
+        item = BaseItem()
+        item['title'] = title
+        item['link' ] = current_visit_url
+        item['content'] = body
+        self.items.append(item)
 
         links = hxs.select("//a/@href").extract()
-
         print("Links in %s" % current_visit_url)
-        for index, link in enumerate(links):
-            print("\t[%02d]: %s" %(index, urljoin(current_visit_url, link)))
-        
+#        for index, link in enumerate(links):
+#            print("\t[%02d]: %s" %(index, urljoin(current_visit_url, link)))
+        yield item
+       
         if not not next_page:
             next_page = urljoin(current_visit_url, next_page[0])
             print ("\tnext_page -> %s" % next_page)
             yield Request(next_page, self.parse)
 
+ 
 
-        
