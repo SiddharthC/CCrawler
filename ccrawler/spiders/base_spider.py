@@ -5,11 +5,11 @@ from scrapy.selector import HtmlXPathSelector
 from scrapy.http.request import Request
 from scrapy.shell import inspect_response
 
-from tutorial.items import ScrapyItem
+from ccrawler.items import BaseItem
 
 
-class ScrapySpider(BaseSpider):
-    name = "scrapy"
+class BaseSpider(BaseSpider):
+    name = "base"
     allowed_domains = ["scrapy.org"]
     start_urls = (
         'http://doc.scrapy.org/en/0.16/',
