@@ -18,4 +18,5 @@ Structures
 Run
 --------
 * To crawl the urls specified in urls.txt using base spider and generate a json file.
-> $ scrapy crawl base -o items.json -t json --nolog
+
+    $ scrapy crawl base -o items.json -t json --nolog
