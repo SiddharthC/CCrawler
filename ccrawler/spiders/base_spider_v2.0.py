@@ -37,17 +37,17 @@ class BaseSpider(BaseSpider):
                     continue
                 elif re.match("^http://", line):
 
-					current_visit_url = line 
-					#Checking is target file exists based on return code
-					ret = urllib2.urlopen(current_visit_url + '/ccdata/crawl_data.json')
+			current_visit_url = line 
+			#Checking is target file exists based on return code
+			ret = urllib2.urlopen(current_visit_url + '/ccdata/crawl_data.json')
 
-					if ret.code == 200:												#ccrawler file exists. Skip normal crawl...		
-						urllib.urlretrieve (current_visit_url+'/ccdata/crawl_data.json', rdir+'/'+ (current_visit_url[6:]).replace('/', '.') + 'remote_crawl_data.json')
-						print("Crawl data found on target... Skipping crawling...")
-						continue
+			if ret.code == 200:												#ccrawler file exists. Skip normal crawl...		
+				urllib.urlretrieve (current_visit_url+'/ccdata/crawl_data.json', rdir+'/'+ (current_visit_url[6:]).replace('/', '.') + 'remote_crawl_data.json')
+				print("Crawl data found on target... Skipping crawling...")
+				continue
 
-					else:															#ccrawler file does not exists. Perform normal crawl... 
-	                    start_urls_list.append(line.strip())
+			else:															#ccrawler file does not exists. Perform normal crawl... 
+	                	start_urls_list.append(line.strip())
 
                 else:
                     self.allowed_domains.append(line.strip())
