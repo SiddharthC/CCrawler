@@ -13,7 +13,7 @@ print "Executing crawl..."
 #for handling command line arguement
 def main(argv):
 	remote_dir='crawl_data'
-	url_file= 'url.txt'
+	url_file= 'urls.txt'
 	target='scrapy'
 	try:
 		opts, args = getopt.getopt(argv, "ht:d:u:", ["targ=","rcdir=","urlfile="])
