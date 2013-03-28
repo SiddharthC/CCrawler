@@ -13,20 +13,23 @@ print "Executing crawl..."
 #for handling command line arguement
 def main(argv):
 	remote_dir='crawl_data'
+	url_file= 'url.txt'
 	target='scrapy'
 	try:
-		opts, args = getopt.getopt(argv, "ht:d:", ["targ=","rcdir="])
+		opts, args = getopt.getopt(argv, "ht:d:u:", ["targ=","rcdir=","urlfile="])
 	except getopt.GetoptError:
-		print 'remote_python.py -t <target_script> -d <remote_crawl_directory>'
+		print 'remote_python.py -t <target_script> -d <remote_crawl_directory> -u <url_file> '
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
-			print 'remote_python.py -t <target_script> -d <remote_crawl_directory>'
+			print 'remote_python.py -t <target_script> -d <remote_crawl_directory> -u <url_file>'
 			sys.exit()
 		elif opt in ('-d', '--rcdir'):
 			remote_dir = arg
 		elif opt in ('-t', '--targ'):
 			target = arg
+		elif opt in ('-u', '--urlfile'):
+			url_file = arg
 
 #	print 'Remote Crawl Directory is  : ', remote_dir
 	dir_check(remote_dir)
@@ -34,7 +37,7 @@ def main(argv):
 	if os.path.exists(crawl_file):
 		os.rename(crawl_file, crawl_file + '.' + str(int(time.time())))
 
-	retcode = subprocess.call(["scrapy", "crawl", target, "-o", crawl_file, "-t", "json", "-a", "rdir="+remote_dir])
+	retcode = subprocess.call(["scrapy", "crawl", target, "-o", crawl_file, "-t", "json", "-a", "rdir="+remote_dir, "-a", "urlfile="+url_file ])
 
 	print 'return code is :', retcode
 
