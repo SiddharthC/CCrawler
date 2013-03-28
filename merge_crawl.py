@@ -5,6 +5,14 @@ import os, sys, getopt, subprocess, time
 
 print "Starting crawl data merge..."
 
+# for handling merging of existing crawl db 
+def merge_handler(remote_dir=None, crawldb=None):
+    datafiles = [f for f in os.listdir(remote_dir) if isfile(join(remote_dir, f))]
+
+	carwl_db = open(crawldb, "a")    
+    for f in onlyfiles:
+#TODO do something that does the merging stuff...
+
 #for handling command line arguement
 def main(argv):
 	remote_dir='remote_data'
