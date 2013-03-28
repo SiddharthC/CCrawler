@@ -1,15 +1,14 @@
 import os
 import re
-import urllib2, urllib 
-from urlparse import urljoin
+import urllib2
+import urllib
 
+from urlparse import urljoin
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
 from scrapy.http.request import Request
 from scrapy.shell import inspect_response
-
 from ccrawler.items import BaseItem
-
 
 
 class BaseSpider(BaseSpider):
@@ -20,13 +19,13 @@ class BaseSpider(BaseSpider):
 
     def __init__(self, rdir="remote_data", urlfile="urls.txt"):
 
-
-		#create a remote directory if one does not exists
+		# create a remote directory if one does not exists
 		if not os.path.exists("../../"+rdir):
 			os.makedirs("../../"+rdir)
 
         # TODO: replace the root directory with constant or configuratoin value
-        urls_list_path = os.path.join(os.path.dirname(__file__), "../../", urlfile)
+        urls_list_path = os.path.join(
+            os.path.dirname(__file__), "../../", urlfile)
 
         # Setting start_urls and allowed_domains from the urls.txt file,
         # located in <project>/urls.txt
@@ -36,19 +35,15 @@ class BaseSpider(BaseSpider):
                 if re.match("^#", line):
                     continue
                 elif re.match("^http://", line):
-
-			current_visit_url = line 
-			#Checking is target file exists based on return code
-			ret = urllib2.urlopen(current_visit_url + '/ccdata/crawl_data.json')
-
-			if ret.code == 200:												#ccrawler file exists. Skip normal crawl...		
-				urllib.urlretrieve (current_visit_url+'/ccdata/crawl_data.json', "../../"+rdir+'/'+ (current_visit_url[6:]).replace('/', '.') + 'remote_crawl_data.json')
-				print("Crawl data found on target... Skipping crawling...")
-				continue
-
-			else:															#ccrawler file does not exists. Perform normal crawl... 
-	                	start_urls_list.append(line.strip())
-
+        			current_visit_url = line 
+        			# Checking is target file exists based on return code
+        			ret = urllib2.urlopen(current_visit_url + '/ccdata/crawl_data.json')
+        			if ret.code == 200:												#ccrawler file exists. Skip normal crawl...		
+        				urllib.urlretrieve (current_visit_url+'/ccdata/crawl_data.json', "../../"+rdir+'/'+ (current_visit_url[6:]).replace('/', '.') + 'remote_crawl_data.json')
+        				print("Crawl data found on target... Skipping crawling...")
+        				continue
+        			else:															#ccrawler file does not exists. Perform normal crawl... 
+                        start_urls_list.append(line.strip())
                 else:
                     self.allowed_domains.append(line.strip())
 
@@ -74,8 +69,8 @@ class BaseSpider(BaseSpider):
 
         links = hxs.select("//a/@href").extract()
         print("Links in %s" % current_visit_url)
-#        for index, link in enumerate(links):
-#            print("\t[%02d]: %s" %(index, urljoin(current_visit_url, link)))
+        # for index, link in enumerate(links):
+        # print("\t[%02d]: %s" %(index, urljoin(current_visit_url, link)))
         yield item
       
         if not not next_page:
