@@ -73,7 +73,7 @@ class BaseSpider(BaseSpider):
         # print("\t[%02d]: %s" %(index, urljoin(current_visit_url, link)))
         yield item
       
-        if not not next_page:
+        if next_page:
             next_page = urljoin(current_visit_url, next_page[0])
             print ("\tnext_page -> %s" % next_page)
             yield Request(next_page, self.parse)
