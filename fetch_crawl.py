@@ -6,6 +6,7 @@ import getopt
 import subprocess
 import time
 
+from ccrawler.settings import *
 
 # for checking/making remote crawl data dirtectory
 def dir_check(rdir):
@@ -16,9 +17,9 @@ print "Executing crawl..."
 
 # for handling command line arguement
 def main(argv):
-    remote_dir = 'crawl_data'
-    url_file = 'urls.txt'
-    target = 'scrapy'
+    remote_dir = DEFAULT_REMOTE_DIR
+    url_file = DEFAULT_URLS_LIST_FILE
+    target = DEFAULT_SPIDER
     try:
         opts, args = getopt.getopt(argv, "ht:d:u:", ["targ=", "rcdir=", "urlfile="])
     except getopt.GetoptError:
@@ -37,7 +38,7 @@ def main(argv):
 
 #	print 'Remote Crawl Directory is  : ', remote_dir
     dir_check(remote_dir)
-    crawl_file = remote_dir + '/crawl_data.json'
+    crawl_file = os.path.join(remote_dir, CRAWL_FILE_NAME)
     if os.path.exists(crawl_file):
         os.rename(crawl_file, crawl_file + '.' + str(int(time.time())))
 

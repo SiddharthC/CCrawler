@@ -6,6 +6,7 @@
 from scrapy.item import Item, Field
 
 class BaseItem(Item):
+    id = Field()
     title = Field()
-    link = Field()
+#    link = Field()
     content = Field()

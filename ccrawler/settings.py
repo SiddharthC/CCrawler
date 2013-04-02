@@ -11,7 +11,10 @@ BOT_NAME = 'ccrawler'
 SPIDER_MODULES = ['ccrawler.spiders']
 NEWSPIDER_MODULE = 'ccrawler.spiders'
 
-# URLS_LIST_FILE = 'urls.txt'
+DEFAULT_REMOTE_DIR = 'crawl_data'
+DEFAULT_SPIDER = 'base'
+DEFAULT_URLS_LIST_FILE = 'urls.txt'
+CRAWL_FILE_NAME = 'crawl_data.json'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'ccrawler (+http://www.yourdomain.com)'

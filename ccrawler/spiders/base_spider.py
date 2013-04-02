@@ -10,6 +10,7 @@ from scrapy.http.request import Request
 from scrapy.shell import inspect_response
 from ccrawler.items import BaseItem
 
+from scrapy.contrib.exporter import XmlItemExporter
 
 class BaseSpider(BaseSpider):
     name = "base"
@@ -66,8 +67,9 @@ class BaseSpider(BaseSpider):
         body = "".join(hxs.select('//div[contains(@class, "body")]//text()').extract())
 
         item = BaseItem()
-        item['title'] = title
-        item['link' ] = current_visit_url
+        item['id'] = current_visit_url
+        item['title'] = title[0]
+#        item['link' ] = current_visit_url
         item['content'] = body
         self.items.append(item)
 
