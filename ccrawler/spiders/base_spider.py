@@ -16,12 +16,12 @@ class BaseSpider(BaseSpider):
     start_urls = ()
     allowed_domains = []
     items = []
-
+    
     def __init__(self, rdir="remote_data", urlfile="urls.txt"):
 
-		# create a remote directory if one does not exists
-		if not os.path.exists("../../"+rdir):
-			os.makedirs("../../"+rdir)
+	# create a remote directory if one does not exists
+	if not os.path.exists("../../"+rdir):
+            os.makedirs("../../"+rdir)
 
         # TODO: replace the root directory with constant or configuratoin value
         urls_list_path = os.path.join(
@@ -35,15 +35,19 @@ class BaseSpider(BaseSpider):
                 if re.match("^#", line):
                     continue
                 elif re.match("^http://", line):
-        			current_visit_url = line 
-        			# Checking is target file exists based on return code
-        			ret = urllib2.urlopen(current_visit_url + '/ccdata/crawl_data.json')
-        			if ret.code == 200:												#ccrawler file exists. Skip normal crawl...		
-        				urllib.urlretrieve (current_visit_url+'/ccdata/crawl_data.json', "../../"+rdir+'/'+ (current_visit_url[6:]).replace('/', '.') + 'remote_crawl_data.json')
-        				print("Crawl data found on target... Skipping crawling...")
-        				continue
-        			else:															#ccrawler file does not exists. Perform normal crawl... 
-                        start_urls_list.append(line.strip())
+        		current_visit_url = line.rstrip() 
+        		# Checking is target file exists based on return code
+                        try:
+                            pre_crawldb_path = os.path.join(current_visit_url, 'ccdata/crawl_data.json')
+                            # CHECKME: If urlopen tries to non-exist url, then it may raise an exception. 
+                            ret = urllib2.urlopen(pre_crawldb_path)
+                            if ret.code == 200:	#ccrawler file exists. Skip normal crawl...		
+        			urllib.urlretrieve (pre_crawldb_path, "../../"+rdir+'/'+ (current_visit_url[6:]).replace('/', '.') + 'remote_crawl_data.json')
+        			print("Crawl data found on target... Skipping crawling...")
+        			continue
+                        except: # file does not exists. Perform normal crawl... 
+                            start_urls_list.append(line.strip())
+                            
                 else:
                     self.allowed_domains.append(line.strip())
 
@@ -55,10 +59,10 @@ class BaseSpider(BaseSpider):
 		
         # Just for debugging -------------------------------------------------------------
         # inspect_response(response) # Invoking the shell from spiders to inspect responses
-   	    # ---------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------------
         hxs = HtmlXPathSelector(response)
-	    next_page = hxs.select("//html/body/div[3]/ul/li[3]/a/@href").extract()
-   	    title = hxs.select("//head/title/text()").extract()
+        next_page = hxs.select("//html/body/div[3]/ul/li[3]/a/@href").extract()
+        title = hxs.select("//head/title/text()").extract()
         body = "".join(hxs.select('//div[contains(@class, "body")]//text()').extract())
 
         item = BaseItem()
