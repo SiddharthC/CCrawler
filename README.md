@@ -23,8 +23,12 @@ Structures
 Run
 --------
 * To crawl the urls specified in urls.txt using base spider and generate a json file.
+
     $ ./fetch_crawl  # fetching pages and storing it in crawl_data folder
+    
+    
     $ ./update_solr  # Update json files in Solr.
     
     $ scrapy crawl base -o items.json -t json --nolog
+    
     $ scrapy crawl base -o items.xml -t xml --nolog
