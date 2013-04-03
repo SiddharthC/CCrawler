@@ -15,7 +15,7 @@ print "Starting crawl data merge..."
 def merge_handler(remote_dir=None, crawldb=None):
     datafiles = [f for f in os.listdir(remote_dir) if isfile(join(remote_dir, f))]
 
-    with open(crawldb, "a") as carwl_db
+    with open(crawldb, "a") as carwl_db:
         for f in datafiles:
             rfile = open(f, "r")
             tester = rfile.readline()
@@ -28,11 +28,12 @@ def merge_handler(remote_dir=None, crawldb=None):
                     # URL substring
 #                    data_tmp = rfile.read()
 #                    data_tmp.replace(localhost_something, url_info.group(1)) 
-                    re.sub( <some regex>, url_info.group(1), rfile.read()) #TODO
+                    re.sub( '<id>(.+?)/', url_info.group(1), rfile.read()) #TODO - Not checked probably done.
                     crawl_db.write(data_tmp)
-            
-
-                
+                    rfile.close()
+                    os.remove(f)                            # Work done so remove the file copied from remote.
+            else:
+                print 'File ' + f + ' contains invalid format. File will be skipped during merge. Please verify...'
             
 
 # TODO do something that does the merging stuff...
@@ -64,6 +65,7 @@ def main(argv):
 
 #	merging logic TODO
 
+    merge_handler(remote_dir, crawldb_dir)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
