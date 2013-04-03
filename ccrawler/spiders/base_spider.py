@@ -2,6 +2,7 @@ import os
 import re
 import urllib2
 import urllib
+import time
 
 from urlparse import urljoin
 from scrapy.spider import BaseSpider
@@ -12,12 +13,13 @@ from ccrawler.items import BaseItem
 
 from scrapy.contrib.exporter import XmlItemExporter
 
+
 class BaseSpider(BaseSpider):
     name = "base"
     start_urls = ()
     allowed_domains = []
     items = []
-    
+
     def __init__(self, rdir="remote_data", urlfile="urls.txt"):
 
 	# create a remote directory if one does not exists
@@ -36,16 +38,20 @@ class BaseSpider(BaseSpider):
                 if re.match("^#", line):
                     continue
                 elif re.match("^http://", line):
-        		current_visit_url = line.rstrip() 
+        		current_visit_url = line.rstrip()
         		# Checking is target file exists based on return code
                         try:
                             pre_crawldb_path = os.path.join(current_visit_url, 'ccdata/crawl_data.json')
-                            # CHECKME: If urlopen tries to non-exist url, then it may raise an exception. 
+                            # CHECKME: If urlopen tries to non-exist url, then it may raise an exception.
                             ret = urllib2.urlopen(pre_crawldb_path)
-                            if ret.code == 200:	#ccrawler file exists. Skip normal crawl...		
-        			urllib.urlretrieve (pre_crawldb_path, "../../"+rdir+'/'+ (current_visit_url[6:]).replace('/', '.') + 'remote_crawl_data.json')
-        			print("Crawl data found on target... Skipping crawling...")
-        			continue
+                            if ret.getcode() == 200:  # ccrawler file exists. Skip normal crawl...
+                                rcopy_local = open("../../"+rdir+'/' + 'remote_crawl_data-' + str(
+                                    int(time.time())) + '.json', 'w')
+                                rcopy_local.write('<crawlRemoteURL>' + current_visit_url + '</crawlRemoteURL>\n')
+                                rcopy_local.write(ret.read())
+                                rcopy_local.close()
+                                print("Crawl data found on target... Skipping crawling...")
+                                continue
                         except: # file does not exists. Perform normal crawl... 
                             start_urls_list.append(line.strip())
                             
