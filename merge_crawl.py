@@ -23,12 +23,12 @@ def merge_handler(remote_dir=None, crawldb=None):
             #if its a valid remote file otherwise ignore
             if re.match('^<crawlRemoteURL>', tester):
                 # Do coversion from local relative to absolute url
-                url_info = re.search('<crawlRemoteURL>(.+?)</crawlRemoteURL>', tester)
+                url_info = re.search('<crawlRemoteURL>(.*)</crawlRemoteURL>', tester)
                 if url_info:
                     # URL substring
 #                    data_tmp = rfile.read()
 #                    data_tmp.replace(localhost_something, url_info.group(1)) 
-                    re.sub( '<id>(.+?)/', url_info.group(1), rfile.read()) #TODO - Not checked probably done.
+                    re.sub( '<id>(.*)/', url_info.group(1), rfile.read()) #TODO - Not checked probably done.
                     crawl_db.write(data_tmp)
                     rfile.close()
                     os.remove(f)                            # Work done so remove the file copied from remote.
