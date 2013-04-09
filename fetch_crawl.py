@@ -43,7 +43,7 @@ def main(argv):
         os.rename(crawl_file, crawl_file + '.' + str(int(time.time())))
 
     retcode = subprocess.call(["scrapy", "crawl", target, "-o", crawl_file,
-                              "-t", "json", "-a", "rdir="+remote_dir, "-a", "urlfile="+url_file])
+                              "-t", "json", "--nolog", "-a", "rdir="+remote_dir, "-a", "urlfile="+url_file])
 
     print 'return code is :', retcode
 
