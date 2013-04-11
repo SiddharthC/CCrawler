@@ -10,15 +10,15 @@ from scrapy.http.request import Request
 from scrapy.shell import inspect_response
 from ccrawler.items import BaseItem
 
-from scrapy.contrib.exporter import XmlItemExporter
+from ccrawler.settings import *
 
 class BaseSpider(BaseSpider):
-    name = "base"
+    name = DEFAULT_SPIDER
     start_urls = ()
     allowed_domains = []
     items = []
     
-    def __init__(self, rdir="remote_data", urlfile="urls.txt"):
+    def __init__(self, rdir="remote_data", urlfile=DEFAULT_URLS_LIST_FILE):
 
 	# create a remote directory if one does not exists
 	if not os.path.exists("../../"+rdir):
@@ -39,7 +39,7 @@ class BaseSpider(BaseSpider):
         		current_visit_url = line.rstrip() 
         		# Checking is target file exists based on return code
                         try:
-                            pre_crawldb_path = os.path.join(current_visit_url, 'ccdata/crawl_data.json')
+                            pre_crawldb_path = os.path.join(current_visit_url, 'ccdata', CRAWL_FILE_NAME)
                             # CHECKME: If urlopen tries to non-exist url, then it may raise an exception. 
                             ret = urllib2.urlopen(pre_crawldb_path)
                             if ret.code == 200:	#ccrawler file exists. Skip normal crawl...		
@@ -69,8 +69,8 @@ class BaseSpider(BaseSpider):
         item = BaseItem()
         item['id'] = current_visit_url
         item['title'] = title[0]
-#        item['link' ] = current_visit_url
         item['content'] = body
+#        item['link' ] = current_visit_url
         self.items.append(item)
 
         links = hxs.select("//a/@href").extract()
