@@ -12,12 +12,13 @@ class UrlsManager:
         self.visited_urls = []
         self.urls_list = []
 
-    def add_urls(self, base_address, urls_list = [""]):
+    def add_urls(self, base_address, urls_list = [""], visited=False):
         """ add a url or list of urls and keep them in urls_list.
         
         base_address is a url of current page, so if ulrs_list contains relative urls, 
         full path could be made by joining it. urls_list could be a list of
-        relative urls or absolute urls. Absolute urls start with 'http://' string."""
+        relative urls or absolute urls. Absolute urls start with 'http://' string.
+        if visited is set True, then urls_list will be regarded as visited."""
         count = 0
         duplicated_count = 0
         if isinstance(urls_list, str):
@@ -29,7 +30,11 @@ class UrlsManager:
                 duplicated_count += 1
                 logging.debug("%s is already visited." % url)
                 continue
-            self.urls_list.append(url)
+            if visited is False:
+                self.urls_list.append(url)
+            else:
+                self.visited_urls.append(url)
+                logging
             count += 1
         
         logging.info("%d new urls are added, %d are ignored." % (count, duplicated_count))
@@ -66,6 +71,9 @@ if __name__ == '__main__':
     print url_handler.get_next_url()
     url_handler.add_urls("http://www.google.com", "patent")
     url_handler.add_urls("http://www.example.com", ["abc", "def", "xyz"])
+    
+    # The following addresses should not be printed out
+    url_handler.add_urls("http://yahoo.com", ["xyz", "wxy"], visited=True)
 
     print url_handler.get_next_url()
     print url_handler.get_next_url()
