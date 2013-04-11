@@ -23,9 +23,9 @@ class BaseSpider(BaseSpider):
     
     def __init__(self, rdir="remote_data", urlfile=DEFAULT_URLS_LIST_FILE):
 
-	# create a remote directory if one does not exists
-	if not os.path.exists("../../"+rdir):
-            os.makedirs("../../"+rdir)
+    	# create a remote directory if one does not exists
+    	if not os.path.exists("../../"+rdir):
+                os.makedirs("../../"+rdir)
 
         # TODO: replace the root directory with constant or configuratoin value
         urls_list_path = os.path.join(
