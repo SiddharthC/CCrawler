@@ -3,6 +3,7 @@ import re
 import urllib2
 import urllib
 import time
+import logging
 
 from urlparse import urljoin
 from scrapy.spider import BaseSpider
@@ -12,7 +13,7 @@ from scrapy.shell import inspect_response
 from ccrawler.items import BaseItem
 
 from ccrawler.settings import *
-
+from ccrawler.utils.urls_manager import UrlsManager
 
 class BaseSpider(BaseSpider):
     name = DEFAULT_SPIDER
@@ -34,6 +35,8 @@ class BaseSpider(BaseSpider):
         # Setting start_urls and allowed_domains from the urls.txt file,
         # located in <project>/urls.txt
         start_urls_list = []
+        self.urls_manager = UrlsManager()
+        
         with open(urls_list_path, "r") as urls:
             for line in urls:
                 if re.match("^#", line):
@@ -60,16 +63,17 @@ class BaseSpider(BaseSpider):
                     self.allowed_domains.append(line.strip())
 
         self.start_urls = tuple(start_urls_list)
+        self.urls_manager.add_urls("", start_urls_list, visited=True)
         
     def parse(self, response):
         current_visit_url = response.url
-        print ("Vistied: %s" % current_visit_url)
+        logging.info ("Vistied: %s" % current_visit_url)
 		
         # Just for debugging -------------------------------------------------------------
         # inspect_response(response) # Invoking the shell from spiders to inspect responses
         # ---------------------------------------------------------------------------------
         hxs = HtmlXPathSelector(response)
-        next_page = hxs.select("//html/body/div[3]/ul/li[3]/a/@href").extract()
+        next_candidate_urls = hxs.select("//html/body/div[3]/ul/li[3]/a/@href").extract()
         title = hxs.select("//head/title/text()").extract()
         body = "".join(hxs.select('//div[contains(@class, "body")]//text()').extract())
 
@@ -86,8 +90,16 @@ class BaseSpider(BaseSpider):
         # print("\t[%02d]: %s" %(index, urljoin(current_visit_url, link)))
         yield item
       
-        if next_page:
-            next_page = urljoin(current_visit_url, next_page[0])
-            print ("\tnext_page -> %s" % next_page)
-            yield Request(next_page, self.parse)
+        
+        if next_candidate_urls:
+            self.urls_manager.add_urls(current_visit_url, next_candidate_urls)
 
+        logging.debug(self.urls_manager.show_current_urls_status())
+        
+        next_url = self.urls_manager.get_next_url()
+        
+        if next_url is not None:
+            logging.info ("\tnext_url -> %s" % next_url)
+            yield Request(next_url, self.parse)          
+
+    
