@@ -1,6 +1,7 @@
 import re
 import logging
 import os
+from urlparse import urljoin
 
 class UrlsManager:
     """ Manages urls list for crawling.
@@ -19,20 +20,23 @@ class UrlsManager:
         full path could be made by joining it. urls_list could be a list of
         relative urls or absolute urls. Absolute urls start with 'http://' string.
         if visited is set True, then urls_list will be regarded as visited."""
+
         count = 0
         duplicated_count = 0
         if isinstance(urls_list, str):
             urls_list = [urls_list] 
         for url in urls_list:
             if not re.match("^http://", url):
-                url = os.path.join(base_address, url)
+                url = urljoin(base_address, url)
             if url in self.visited_urls or url in self.urls_list:
                 duplicated_count += 1
                 logging.debug("%s is already visited." % url)
                 continue
             if visited is False:
+                logging.debug("%s is newly added." % url)
                 self.urls_list.append(url)
             else:
+                logging.debug("%s is newly added as visited." % url)
                 self.visited_urls.append(url)
                 logging
             count += 1
@@ -61,6 +65,9 @@ class UrlsManager:
                 break
             
         return url
+    
+    def show_current_urls_status(self):
+        logging.info ("URLS List%s\nVisited URLs%s" %(self.urls_list, self.visited_urls))
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
