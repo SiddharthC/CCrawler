@@ -20,6 +20,7 @@ class BaseSpider(BaseSpider):
     start_urls = ()
     allowed_domains = []
     items = []
+    handle_httpstatus_list = [404]
 
     
     def __init__(self, rdir="remote_data", urlfile=DEFAULT_URLS_LIST_FILE):
@@ -63,43 +64,66 @@ class BaseSpider(BaseSpider):
                     self.allowed_domains.append(line.strip())
 
         self.start_urls = tuple(start_urls_list)
+        self.urls_manager.update_allowed_domain(self.allowed_domains)
         self.urls_manager.add_urls("", start_urls_list, visited=True)
         
     def parse(self, response):
         current_visit_url = response.url
         logging.info ("Vistied: %s" % current_visit_url)
-		
-        # Just for debugging -------------------------------------------------------------
-        # inspect_response(response) # Invoking the shell from spiders to inspect responses
-        # ---------------------------------------------------------------------------------
-        hxs = HtmlXPathSelector(response)
-        next_candidate_urls = hxs.select("//html/body/div[3]/ul/li[3]/a/@href").extract()
-        title = hxs.select("//head/title/text()").extract()
-        body = "".join(hxs.select('//div[contains(@class, "body")]//text()').extract())
 
-        item = BaseItem()
-        item['id'] = current_visit_url
-        item['title'] = title[0]
-        item['content'] = body
-#        item['link' ] = current_visit_url
-        self.items.append(item)
-
-        links = hxs.select("//a/@href").extract()
-        print("Links in %s" % current_visit_url)
-        # for index, link in enumerate(links):
-        # print("\t[%02d]: %s" %(index, urljoin(current_visit_url, link)))
-        yield item
-      
+        if response.status != 404:
+            # Just for debugging -------------------------------------------------------------
+            # inspect_response(response) # Invoking the shell from spiders to inspect responses
+            # ---------------------------------------------------------------------------------
+            try:
+                hxs = HtmlXPathSelector(response)
+                next_candidate_urls = hxs.select("//a/@href").extract()
+                title = hxs.select("//head/title/text()").extract()
+                body = "".join(hxs.select('//div[contains(@class, "body")]//text()').extract())
         
-        if next_candidate_urls:
-            self.urls_manager.add_urls(current_visit_url, next_candidate_urls)
+                item = BaseItem()
+                item['id'] = current_visit_url
+                if title:
+                    item['title'] = title[0]
+                item['content'] = body
+        #        item['link' ] = current_visit_url
+                self.items.append(item)
+        
+                # links = hxs.select("//a/@href").extract()
+                # print("Links in %s" % current_visit_url)
+                # for index, link in enumerate(links):
+                # print("\t[%02d]: %s" %(index, urljoin(current_visit_url, link)))
+                yield item
+            except AttributeError:
+                # TODO: This exception is due to requesting "~.png", but it doesn't know how to handle it.
+                logging.info("Exception Occurs! while parsing.")
+                next_url = self.urls_manager.get_next_url()
+                
+                if next_url is not None:
+                    logging.info ("\tnext_url -> %s" % next_url)
+                    yield Request(next_url, self.parse, errback=self.base_errback)          
+                
 
-        logging.debug(self.urls_manager.show_current_urls_status())
+            if next_candidate_urls:
+                self.urls_manager.add_urls(current_visit_url, next_candidate_urls)
+    
+            logging.debug(self.urls_manager.show_current_urls_status())
+            
+        else:
+            logging.info("Return status 404: %s", current_visit_url)
         
         next_url = self.urls_manager.get_next_url()
         
         if next_url is not None:
             logging.info ("\tnext_url -> %s" % next_url)
-            yield Request(next_url, self.parse)          
+            yield Request(next_url, self.parse, errback=self.base_errback)          
 
-    
+    def base_errback(self, failure):
+        logging.info("Error occurs")
+        next_url = self.urls_manager.get_next_url()
+        
+        if next_url is not None:
+            logging.info ("\tnext_url -> %s" % next_url)
+            yield Request(next_url, self.parse, errback=self.base_errback)          
+
+        
