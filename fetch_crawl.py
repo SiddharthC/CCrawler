@@ -23,11 +23,11 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "ht:d:u:", ["targ=", "rcdir=", "urlfile="])
     except getopt.GetoptError:
-        print 'remote_python.py -t <target_script> -d <remote_crawl_directory> -u <url_file> '
+        print 'fetch_crawl.py -t <target_script> -d <remote_crawl_directory> -u <url_file> '
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print 'remote_python.py -t <target_script> -d <remote_crawl_directory> -u <url_file>'
+            print 'fetch_crawl.py -t <target_script> -d <remote_crawl_directory> -u <url_file>'
             sys.exit()
         elif opt in ('-d', '--rcdir'):
             remote_dir = arg
