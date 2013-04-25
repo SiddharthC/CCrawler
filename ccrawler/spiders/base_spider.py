@@ -22,16 +22,16 @@ class BaseSpider(BaseSpider):
     items = []
     handle_httpstatus_list = [404]
 
-    
-    def __init__(self, rdir="remote_data", urlfile=DEFAULT_URLS_LIST_FILE):
 
-    	# create a remote directory if one does not exists
-    	if not os.path.exists("../../"+rdir):
-                os.makedirs("../../"+rdir)
+    def __init__(self, rdir="remote_data", urlfile=DEFAULT_URLS_LIST_FILE, ccrawl_flag=DEFAULT_CCRAWL_FLAG):
 
+        # create a remote directory if one does not exists
+        if not os.path.exists(rdir):
+                os.makedirs(rdir)
+                
         # TODO: replace the root directory with constant or configuratoin value
         urls_list_path = os.path.join(
-            os.path.dirname(__file__), "../../", urlfile)
+            os.path.dirname(__file__),'../../', urlfile)
 
         # Setting start_urls and allowed_domains from the urls.txt file,
         # located in <project>/urls.txt
@@ -44,22 +44,28 @@ class BaseSpider(BaseSpider):
                     continue
                 elif re.match("^https?://", line):
                     current_visit_url = line.rstrip()
-                    # Checking is target file exists based on return code
-                    try:
-                        pre_crawldb_path = os.path.join(current_visit_url, 'ccdata', CRAWL_FILE_NAME)
-                        # CHECKME: If urlopen tries to non-exist url, then it may raise an exception. 
-                        ret = urllib2.urlopen(pre_crawldb_path)
-                        if ret.getcode() == 200:  # ccrawler file exists. Skip normal crawl...
-                            rcopy_local = open("../../"+rdir+'/' + 'remote_crawl_data-' + str(
-                                int(time.time())) + '.json', 'w')
-                            rcopy_local.write('<crawlRemoteURL>' + current_visit_url + '</crawlRemoteURL>\n')
-                            rcopy_local.write(ret.read())
-                            rcopy_local.close()
-                            print("Crawl data found on target... Skipping crawling...")
-                            continue
-                    except: # file does not exists. Perform normal crawl... 
+                    if int(ccrawl_flag) == 1:
+                        #p = re.compile('^[\S]*?\/\/[\S]*?\/')
+                        url_splitted = current_visit_url.split('/')
+                        #print url_splitted[0]+'//'+url_splitted[2]+'/'+url_splitted[3]+'/'
+                        # Checking is target file exists based on return code
+                        try:
+                            pre_crawldb_path = os.path.join(url_splitted[0]+'//'+url_splitted[2]+'/'+url_splitted[3]+'/', 'ccdata', CRAWL_FILE_NAME)
+                            # CHECKME: If urlopen tries to non-exist url, then it may raise an exception. 
+                            ret = urllib2.urlopen(pre_crawldb_path)
+                            if ret.getcode() == 200:  # ccrawler file exists. Skip normal crawl...
+                                rcopy_local = open(rdir+'/' + 'remote_crawl_data-' + str(
+                                   int(time.time())) + '.json', 'w')
+                                rcopy_local.write('<crawlRemoteURL>' + current_visit_url + '</crawlRemoteURL>\n')
+                                rcopy_local.write(ret.read())
+                                rcopy_local.close()
+                                print("Crawl data found on target...\nSkipping crawling...\n")
+                                continue
+                        except: # file does not exists. Perform normal crawl... 
+                            start_urls_list.append(line.strip())
+                    else:
                         start_urls_list.append(line.strip())
-                            
+
                 else:
                     if len(line.strip()) > 0:
                         self.allowed_domains.append(line.strip())
