@@ -73,7 +73,7 @@ def main(argv):
         os.rename(crawl_file, crawl_file + '.' + str(int(time.time())))
 
     retcode = subprocess.call(["scrapy", "crawl", target, "-o", crawl_file,
-                              "-t", "json", "--nolog", "-a", "rdir="+remote_dir, "-a", "urlfile="+url_file, "-a", "ccrawl_flag="+ccrawl_flag])
+                              "-t", "json", "--nolog", "-a", "rdir="+remote_dir, "-a", "urlfile="+url_file, "-a", "ccrawl_flag="+str(ccrawl_flag)])
     if int(ccrawl_flag) == 1:
         merge_handler(remote_dir)
     else:
