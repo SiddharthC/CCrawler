@@ -38,7 +38,7 @@ def merge_handler(remote_dir=DEFAULT_REMOTE_DIR):
                     #print 'Data_dump = ' + data_tmp
                     crawl_db.write(data_tmp)
                     rfile.close()
-                    os.remove(remote_dir+'/remote_data/'+f)
+#                    os.remove(remote_dir+'/remote_data/'+f)
             else:
                 print 'File ' + f + ' contains invalid format. File will be skipped during merge. Please verify...'
 
