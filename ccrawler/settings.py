@@ -15,6 +15,7 @@ DEFAULT_REMOTE_DIR = 'crawl_data'
 DEFAULT_SPIDER = 'base'
 DEFAULT_URLS_LIST_FILE = 'urls.txt'
 CRAWL_FILE_NAME = 'crawl_data.json'
+DEFAULT_CCRAWL_FLAG = 0
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'ccrawler (+http://www.yourdomain.com)'
