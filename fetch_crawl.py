@@ -17,13 +17,13 @@ def dir_check(rdir):
 print "Executing crawl..."
 
 def merge_handler(remote_dir=DEFAULT_REMOTE_DIR):
-    datafiles = [g for g in os.listdir(remote_dir+'/remote_data') if os.path.isfile(os.path.join(remote_dir+'/remote_data', g))]
+    datafiles = [f for f in os.listdir(remote_dir+'/remote_data') if os.path.isfile(os.path.join(remote_dir+'/remote_data', f))]
 
     with open(remote_dir+'/crawl_data.json', "a") as crawl_db:
-        for g in datafiles:
-            subprocess.call(["tar", "-zxvf", remote_dir+'/remote_data/'+g, "-C", remote_dir+'/remote_data/'])
-            g_splitted = g.split('.')
-            f = g_splitted[0]+'.'+g_splitted[1]
+        for f in datafiles:
+            #subprocess.call(["tar", "-zxvf", remote_dir+'/remote_data/'+g, "-C", remote_dir+'/remote_data/'])
+            #g_splitted = g.split('.')
+            #f = g_splitted[0]+'.'+g_splitted[1]
 
             rfile = open(remote_dir+'remote_data/'+f, "r")
             tester = rfile.readline()
@@ -76,8 +76,8 @@ def main(argv):
                               "-t", "json", "--nolog", "-a", "rdir="+remote_dir, "-a", "urlfile="+url_file, "-a", "ccrawl_flag="+ccrawl_flag])
     if int(ccrawl_flag) == 1:
         merge_handler(remote_dir)
-    else:
-        subprocess.call(["tar", "-zcvf", crawl_file+'.tar.gz', crawl_file])
+    #else:
+    #    subprocess.call(["tar", "-zcvf", crawl_file+'.tar.gz', crawl_file])
 
     print 'return code is :', retcode
 
