@@ -76,6 +76,8 @@ def main(argv):
                               "-t", "json", "--nolog", "-a", "rdir="+remote_dir, "-a", "urlfile="+url_file, "-a", "ccrawl_flag="+ccrawl_flag])
     if int(ccrawl_flag) == 1:
         merge_handler(remote_dir)
+    else:
+        subprocess.call(["tar", "-zcvf", crawl_file+'.tar.gz', crawl_file])
 
     print 'return code is :', retcode
 

@@ -52,7 +52,7 @@ class BaseSpider(BaseSpider):
                         #print url_splitted[0]+'//'+url_splitted[2]+'/'+url_splitted[3]+'/'
                         # Checking is target file exists based on return code
                         try:
-                            pre_crawldb_path = os.path.join(url_splitted[0]+'//'+url_splitted[2]+'/'+url_splitted[3]+'/', 'ccdata', CRAWL_FILE_NAME)
+                            pre_crawldb_path = os.path.join(url_splitted[0]+'//'+url_splitted[2]+'/'+url_splitted[3]+'/', 'ccdata', CRAWL_FILE_NAME+'.tar.gz')
                             # CHECKME: If urlopen tries to non-exist url, then it may raise an exception. 
                             ret = urllib2.urlopen(pre_crawldb_path)
                             if ret.getcode() == 200:  # ccrawler file exists. Skip normal crawl...
