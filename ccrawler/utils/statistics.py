@@ -56,6 +56,7 @@ class Statistics:
             self.stat_data.append(stat)
             logging.info(stat)
          
+        print stat
         self.start_time_checked = False
 
     
@@ -79,6 +80,7 @@ class Statistics:
         stat_summary = (self.total_number_of_urls, self.total_response_size, self.total_download_time, self.total_elapsed_time)
         print ("Total # of URLs: %d\nTotal Response size: %d bytes\nTotal Downloadtime: %.2f ms\nTotal Elapsed Time: %.2f ms" %
                stat_summary)
-        print ("Average Elapsed Time: %.2f ms" % (self.total_elapsed_time / self.total_number_of_urls))
-        print ("Average Resonse Size: %.2f bytes" % (self.total_response_size / float(self.total_number_of_urls)))
+        if self.total_number_of_urls > 0:
+            print ("Average Elapsed Time: %.2f ms" % (self.total_elapsed_time / self.total_number_of_urls))
+            print ("Average Resonse Size: %.2f bytes" % (self.total_response_size / float(self.total_number_of_urls)))
         return stat_summary
