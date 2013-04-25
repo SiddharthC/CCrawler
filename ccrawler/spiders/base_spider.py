@@ -1,22 +1,24 @@
-import os
-import re
-import urllib2
-import urllib
-import time
-import logging
-
-from urlparse import urljoin
-from scrapy import project, signals
-from scrapy.spider import BaseSpider
-from scrapy.selector import HtmlXPathSelector
-from scrapy.http.request import Request
-from scrapy.shell import inspect_response
-from scrapy.xlib.pydispatch import dispatcher
-
 from ccrawler.items import BaseItem
-
 from ccrawler.settings import *
 from ccrawler.utils.urls_manager import UrlsManager
+from scrapy.http.request import Request
+from scrapy.selector import HtmlXPathSelector
+from scrapy.shell import inspect_response
+from scrapy.spider import BaseSpider
+from scrapy.xlib.pydispatch import dispatcher
+from scrapy import project, signals
+
+from urlparse import urljoin
+from ccrawler.utils.statistics import Statistics
+import logging
+import os
+import re
+import time
+import urllib
+import urllib2
+
+
+
 
 class BaseSpider(BaseSpider):
     name = DEFAULT_SPIDER
@@ -24,25 +26,18 @@ class BaseSpider(BaseSpider):
     allowed_domains = []
     items = []
     handle_httpstatus_list = [404]
-    start_time = 0.0
+    request_time = 0.0
 
-    def _item_request_received(self):
-        start_time = time.time()
-        self.start_time = start_time
-        print("Start time: %f" % start_time)
 
-    def _item_response_received(self):
-        end_time = time.time()
-        print("End time: %f" % end_time)
-        print("Elapsed time: %0.2f ms\n" % (float(end_time - self.start_time) * 1000.0))
-
- 
     def __init__(self, rdir="remote_data", urlfile=DEFAULT_URLS_LIST_FILE, ccrawl_flag=DEFAULT_CCRAWL_FLAG):
         # Register a dispatcher
         #TODO: make a separate class
-        dispatcher.connect(self._item_request_received, signals.request_received)
-        dispatcher.connect(self._item_response_received, signals.response_received)
 
+        self.statistics = Statistics()
+        dispatcher.connect(self.statistics.item_request_received, signals.request_received)
+        dispatcher.connect(self.statistics.item_response_received, signals.response_received)
+        dispatcher.connect(self.statistics.item_response_downloaded, signals.response_downloaded)
+        dispatcher.connect(self.item_spider_closed, signals.spider_closed)
 
         # create a remote directory if one does not exists
         if not os.path.exists(rdir):
@@ -162,4 +157,10 @@ class BaseSpider(BaseSpider):
             logging.info ("\tnext_url -> %s" % next_url)
             yield Request(next_url, self.parse, errback=self.base_errback, dont_filter = True)          
 
-        
+    def item_spider_closed(self, spider, reason):
+        print("=" * 40)
+        print(" CCrawler Summary")
+        print("-" * 40)
+        self.statistics.get_summary()
+        print("=" * 40)
+
