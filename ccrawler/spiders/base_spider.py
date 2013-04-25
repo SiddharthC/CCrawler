@@ -31,7 +31,7 @@ class BaseSpider(BaseSpider):
 
         # TODO: replace the root directory with constant or configuratoin value
         urls_list_path = os.path.join(
-            os.path.dirname(__file__), urlfile)
+            os.path.dirname(__file__),'../../', urlfile)
 
         # Setting start_urls and allowed_domains from the urls.txt file,
         # located in <project>/urls.txt
