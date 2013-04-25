@@ -66,12 +66,12 @@ class BaseSpider(BaseSpider):
                         #print url_splitted[0]+'//'+url_splitted[2]+'/'+url_splitted[3]+'/'
                         # Checking is target file exists based on return code
                         try:
-                            pre_crawldb_path = os.path.join(url_splitted[0]+'//'+url_splitted[2]+'/'+url_splitted[3]+'/', 'ccdata', CRAWL_FILE_NAME+'.tar.gz')
+                            pre_crawldb_path = os.path.join(url_splitted[0]+'//'+url_splitted[2]+'/'+url_splitted[3]+'/', 'ccdata', CRAWL_FILE_NAME)
                             # CHECKME: If urlopen tries to non-exist url, then it may raise an exception. 
                             ret = urllib2.urlopen(pre_crawldb_path)
                             if ret.getcode() == 200:  # ccrawler file exists. Skip normal crawl...
                                 rcopy_local = open(rdir+'/remote_data/' + 'remote_crawl_data-' + str(
-                                   int(time.time())) + '.json.tar.gz', 'w')
+                                   int(time.time())) + '.json', 'w')
                                 rcopy_local.write('<crawlRemoteURL>' + current_visit_url + '</crawlRemoteURL>\n')
                                 rcopy_local.write(ret.read())
                                 rcopy_local.close()
