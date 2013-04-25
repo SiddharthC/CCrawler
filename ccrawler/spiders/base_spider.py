@@ -45,6 +45,8 @@ class BaseSpider(BaseSpider):
                 elif re.match("^https?://", line):
                     current_visit_url = line.rstrip()
                     if int(ccrawl_flag) == 1:
+                        if not os.path.exists(rdir+'/remote_data'):
+                            os.makedirs(rdir+'/remote_data')
                         #p = re.compile('^[\S]*?\/\/[\S]*?\/')
                         url_splitted = current_visit_url.split('/')
                         #print url_splitted[0]+'//'+url_splitted[2]+'/'+url_splitted[3]+'/'
@@ -54,7 +56,7 @@ class BaseSpider(BaseSpider):
                             # CHECKME: If urlopen tries to non-exist url, then it may raise an exception. 
                             ret = urllib2.urlopen(pre_crawldb_path)
                             if ret.getcode() == 200:  # ccrawler file exists. Skip normal crawl...
-                                rcopy_local = open(rdir+'/' + 'remote_crawl_data-' + str(
+                                rcopy_local = open(rdir+'/remote_data/' + 'remote_crawl_data-' + str(
                                    int(time.time())) + '.json', 'w')
                                 rcopy_local.write('<crawlRemoteURL>' + current_visit_url + '</crawlRemoteURL>\n')
                                 rcopy_local.write(ret.read())

@@ -5,6 +5,7 @@ import sys
 import getopt
 import subprocess
 import time
+import re
 
 from ccrawler.settings import *
 
@@ -14,6 +15,28 @@ def dir_check(rdir):
         os.makedirs(rdir)
 
 print "Executing crawl..."
+
+def merge_handler(remote_dir=DEFAULT_REMOTE_DIR):
+    datafiles = [f for f in os.listdir(remote_dir+'/remote_data') if os.path.isfile(os.path.join(remote_dir+'/remote_data', f))]
+
+    with open(remote_dir+'/crawl_data.json', "a") as crawl_db:
+        for f in datafiles:
+            rfile = open(remote_dir+'/remote_data/'+f, "r")
+            tester = rfile.readline()
+
+            #if its a valid remote file otherwise ignore
+            if re.match('^<crawlRemoteURL>', tester):
+                url_info = re.search('<crawlRemoteURL>(.*)</crawlRemoteURL>', tester)
+                if url_info:
+                    #print 'Url_info = '+ str(url_info)
+                    data_tmp = rfile.read()
+                    re.sub('<id>[\S]*//([\S]*?)/', url_info.group(1), data_tmp)
+                    #print 'Data_dump = ' + data_tmp
+                    crawl_db.write(data_tmp)
+                    rfile.close()
+                    os.remove(remote_dir+'/remote_data/'+f)
+            else:
+                print 'File ' + f + ' contains invalid format. File will be skipped during merge. Please verify...'
 
 # for handling command line arguement
 def main(argv):
@@ -47,6 +70,8 @@ def main(argv):
 
     retcode = subprocess.call(["scrapy", "crawl", target, "-o", crawl_file,
                               "-t", "json", "--nolog", "-a", "rdir="+remote_dir, "-a", "urlfile="+url_file, "-a", "ccrawl_flag="+ccrawl_flag])
+    if int(ccrawl_flag) == 1:
+        merge_handler(remote_dir)
 
     print 'return code is :', retcode
 
