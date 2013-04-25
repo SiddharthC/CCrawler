@@ -17,10 +17,14 @@ def dir_check(rdir):
 print "Executing crawl..."
 
 def merge_handler(remote_dir=DEFAULT_REMOTE_DIR):
-    datafiles = [f for f in os.listdir(remote_dir+'/remote_data') if os.path.isfile(os.path.join(remote_dir+'/remote_data', f))]
+    datafiles = [g for g in os.listdir(remote_dir+'/remote_data') if os.path.isfile(os.path.join(remote_dir+'/remote_data', g))]
 
     with open(remote_dir+'/crawl_data.json', "a") as crawl_db:
-        for f in datafiles:
+        for g in datafiles:
+            subprocess.call(["tar", "-zxvf", remote_dir+'/remote_data/'+g, "-C", remote_dir+'/remote_data/'])
+            g_splitted = g.split('.')
+            f = g_splitted[0]+'.'+g_splitted[1]
+
             rfile = open(remote_dir+'/remote_data/'+f, "r")
             tester = rfile.readline()
 
