@@ -42,7 +42,7 @@ class BaseSpider(BaseSpider):
             for line in urls:
                 if re.match("^#", line):
                     continue
-                elif re.match("^http://", line):
+                elif re.match("^https?://", line):
                     current_visit_url = line.rstrip()
                     # Checking is target file exists based on return code
                     try:
@@ -61,7 +61,8 @@ class BaseSpider(BaseSpider):
                         start_urls_list.append(line.strip())
                             
                 else:
-                    self.allowed_domains.append(line.strip())
+                    if len(line.strip()) > 0:
+                        self.allowed_domains.append(line.strip())
 
         self.start_urls = tuple(start_urls_list)
         self.urls_manager.update_allowed_domain(self.allowed_domains)
@@ -79,13 +80,14 @@ class BaseSpider(BaseSpider):
                 hxs = HtmlXPathSelector(response)
                 next_candidate_urls = hxs.select("//a/@href").extract()
                 title = hxs.select("//head/title/text()").extract()
-                body = "".join(hxs.select('//div[contains(@class, "body")]//text()').extract())
+                body = "".join(hxs.select('//body/text()').extract())
         
                 item = BaseItem()
                 item['id'] = current_visit_url
                 if title:
                     item['title'] = title[0]
                 item['content'] = body
+                
         #        item['link' ] = current_visit_url
                 self.items.append(item)
         
@@ -94,6 +96,10 @@ class BaseSpider(BaseSpider):
                 # for index, link in enumerate(links):
                 # print("\t[%02d]: %s" %(index, urljoin(current_visit_url, link)))
                 yield item
+
+                if next_candidate_urls:
+                    self.urls_manager.add_urls(current_visit_url, next_candidate_urls)
+
             except AttributeError:
                 # TODO: This exception is due to requesting "~.png", but it doesn't know how to handle it.
                 logging.info("Exception Occurs! while parsing.")
@@ -104,8 +110,6 @@ class BaseSpider(BaseSpider):
                     yield Request(next_url, self.parse, errback=self.base_errback)          
                 
 
-            if next_candidate_urls:
-                self.urls_manager.add_urls(current_visit_url, next_candidate_urls)
     
             logging.debug(self.urls_manager.show_current_urls_status())
             
@@ -116,7 +120,7 @@ class BaseSpider(BaseSpider):
         
         if next_url is not None:
             logging.info ("\tnext_url -> %s" % next_url)
-            yield Request(next_url, self.parse, errback=self.base_errback)          
+            yield Request(next_url, self.parse, errback=self.base_errback, dont_filter = True)          
 
     def base_errback(self, failure):
         logging.info("Error occurs")
@@ -124,6 +128,6 @@ class BaseSpider(BaseSpider):
         
         if next_url is not None:
             logging.info ("\tnext_url -> %s" % next_url)
-            yield Request(next_url, self.parse, errback=self.base_errback)          
+            yield Request(next_url, self.parse, errback=self.base_errback, dont_filter = True)          
 
         

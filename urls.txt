@@ -1,5 +1,10 @@
 # Allowed domains and start_urls
 # If a line begins without protocol scheme (i.e. http), it contains allowed_domain.
 # The following lines with protocol are urls to be crawlled.
-doc.scrapy.org
-http://doc.scrapy.org/en/0.16/
+
+google.com
+http://www.google.com
+# 127.0.0.1	
+# http://127.0.0.1:8080/doc.scrapy.org/en/0.16/index.html
+# doc.scrapy.org
+# http://doc.scrapy.org/en/0.16/
