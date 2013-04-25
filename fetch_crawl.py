@@ -25,7 +25,7 @@ def merge_handler(remote_dir=DEFAULT_REMOTE_DIR):
             g_splitted = g.split('.')
             f = g_splitted[0]+'.'+g_splitted[1]
 
-            rfile = open(remote_dir+'/remote_data/'+f, "r")
+            rfile = open(remote_dir+'remote_data/'+f, "r")
             tester = rfile.readline()
 
             #if its a valid remote file otherwise ignore

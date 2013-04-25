@@ -57,7 +57,7 @@ class BaseSpider(BaseSpider):
                             ret = urllib2.urlopen(pre_crawldb_path)
                             if ret.getcode() == 200:  # ccrawler file exists. Skip normal crawl...
                                 rcopy_local = open(rdir+'/remote_data/' + 'remote_crawl_data-' + str(
-                                   int(time.time())) + '.json', 'w')
+                                   int(time.time())) + '.json.tar.gz', 'w')
                                 rcopy_local.write('<crawlRemoteURL>' + current_visit_url + '</crawlRemoteURL>\n')
                                 rcopy_local.write(ret.read())
                                 rcopy_local.close()
