@@ -78,7 +78,8 @@ class BaseSpider(BaseSpider):
             # ---------------------------------------------------------------------------------
             try:
                 hxs = HtmlXPathSelector(response)
-                next_candidate_urls = hxs.select("//a/@href").extract()
+                anchors = hxs.select("//a")
+                next_candidate_urls = anchors.select("@href").extract()
                 title = hxs.select("//head/title/text()").extract()
                 body = "".join(hxs.select('//body/text()').extract())
         
@@ -87,7 +88,11 @@ class BaseSpider(BaseSpider):
                 if title:
                     item['title'] = title[0]
                 item['content'] = body
-                
+                link_infos = []
+                for anchor in anchors:
+                    link_info = (anchor.select("text()").extract(), anchor.select("@href").extract())
+                    link_infos.append(link_info)
+                item['links'] = link_infos
         #        item['link' ] = current_visit_url
                 self.items.append(item)
         
