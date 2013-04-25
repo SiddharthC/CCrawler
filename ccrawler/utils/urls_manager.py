@@ -47,9 +47,12 @@ class UrlsManager:
             urls_list = [urls_list] 
         for url in urls_list:
             # TODO: Normalize url, Refactoring.
+            # Wiki Page's structure is a little bit comple, it contains. Chect that.
 
             if url.find("#") >= 0:
                 url = url[:url.find("#")] # # just pointing somewhere in the page
+            if "mailto:" in url:
+                continue
 
             path = urlparse.urlparse(url).path
             extension = os.path.splitext(path)[1]
@@ -57,7 +60,7 @@ class UrlsManager:
                 ignored_count += 1
                 continue
 
-            if not re.match("^http://", url):
+            if not re.match("^https?://", url):
                 url = urljoin(base_address, url)
                 url = url.rstrip("/") # path/to/url and path/to/url/ should be same
 
@@ -69,7 +72,7 @@ class UrlsManager:
                 url = url.rstrip("/") # path/to/url and path/to/url/ should be same
             
             url = unicode(url)
-
+            
             if self.check_allowed_domain(url) is False:
                 ignored_count += 1
                 continue
@@ -109,7 +112,7 @@ class UrlsManager:
             else:
                 self.visited_urls.append(url)
                 break
-        print ("Handle: %s" % url)
+        print ("Visiting: %s" % url)
         return url
     
     def show_current_urls_status(self):
