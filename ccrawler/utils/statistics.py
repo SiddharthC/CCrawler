@@ -10,8 +10,8 @@ import os
 import os.path
 import time
 
-# url, request_size, download_latency, download_time, elapsed_time,
-headers = ['URL', 'request_size', 'download_latency', 'download_time', 'elapsed_time']
+# Relative time, url, request_size, download_latency, download_time, elapsed_time,
+headers = ['Relative time', 'URL', 'request_size', 'download_latency', 'download_time', 'elapsed_time']
 
 class Statistics:
     """ It measures Per page crawling time, transfer size, Per request time, etc.
@@ -59,8 +59,8 @@ class Statistics:
             self.total_elapsed_time += elapsed_time
             self.total_number_of_urls += 1
             self.total_response_size += len(response.body)
-            # url, request_size, download_latency, download_time, elapsed_time, 
-            stat = (self.url, len(response.body), response.meta['download_latency'], download_time, elapsed_time)
+            # relative time, url, request_size, download_latency, download_time, elapsed_time, 
+            stat = (time.time() - self.start_time, self.url, len(response.body), response.meta['download_latency'], download_time, elapsed_time)
             self.stat_data.append(stat)
             logging.info(stat)
          
@@ -71,7 +71,7 @@ class Statistics:
         if self.start_time_checked is True:
             elapsed_time = (self.response_time - self.request_time)
         else:
-            print ("Ignore this time. it doesn't have start time yet.")
+            logging.info ("Ignore this time. it doesn't have start time yet.")
             elapsed_time = 0.0
         return elapsed_time
 
