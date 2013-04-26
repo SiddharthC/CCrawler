@@ -15,6 +15,7 @@ def dir_check(rdir):
         os.makedirs(rdir)
 
 print "Executing crawl..."
+start_time = time.time()
 
 def merge_handler(remote_dir=DEFAULT_REMOTE_DIR):
     datafiles = [f for f in os.listdir(remote_dir+'/remote_data') if os.path.isfile(os.path.join(remote_dir+'/remote_data', f))]
@@ -79,11 +80,13 @@ def main(argv):
     #else:
     #    subprocess.call(["tar", "-zcvf", crawl_file+'.tar.gz', crawl_file])
 
+    end_time = time.time()
+    global start_time
+    print ("Total Elapsed Time: %.2f ms" % ((end_time - start_time) * 1000))
     print 'return code is :', retcode
 
 if __name__ == '__main__':
     main(sys.argv[1:])
-
 
 # if not os.path.exists
 
