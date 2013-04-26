@@ -2,6 +2,7 @@ from urlparse import urljoin
 import logging
 import os
 import re
+import sys
 import urlparse
 
 class UrlsManager:
@@ -112,7 +113,8 @@ class UrlsManager:
             else:
                 self.visited_urls.append(url)
                 break
-        print ("Visiting: %s" % url)
+        sys.stdout.write("Visiting: %-80s\r" % url)
+        sys.stdout.flush()
         return url
     
     def show_current_urls_status(self):

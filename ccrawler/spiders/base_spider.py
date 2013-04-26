@@ -37,7 +37,9 @@ class BaseSpider(BaseSpider):
         dispatcher.connect(self.statistics.item_request_received, signals.request_received)
         dispatcher.connect(self.statistics.item_response_received, signals.response_received)
         dispatcher.connect(self.statistics.item_response_downloaded, signals.response_downloaded)
+        dispatcher.connect(self.item_spider_opened, signals.spider_opened)
         dispatcher.connect(self.item_spider_closed, signals.spider_closed)
+
 
         # create a remote directory if one does not exists
         if not os.path.exists(rdir):
@@ -89,6 +91,8 @@ class BaseSpider(BaseSpider):
         self.start_urls = tuple(start_urls_list)
         self.urls_manager.update_allowed_domain(self.allowed_domains)
         self.urls_manager.add_urls("", start_urls_list, visited=True)
+        
+        self.statistics.set_initial_urls(start_urls_list)
         
     def parse(self, response):
         current_visit_url = response.url
@@ -157,10 +161,24 @@ class BaseSpider(BaseSpider):
             logging.info ("\tnext_url -> %s" % next_url)
             yield Request(next_url, self.parse, errback=self.base_errback, dont_filter = True)          
 
+    def item_spider_opened(self, spider):
+        self.statistics.set_start_time()
+        print("=" * 80)
+        print(" CCrawler Opened and started")
+        print("-" * 80)
+        print("Initial seed Urls")
+        print(self.start_urls)
+        print("=" * 80)
+        
+        
+        
+        
     def item_spider_closed(self, spider, reason):
-        print("=" * 40)
+        self.statistics.set_end_time()
+        print ("\n")
+        print("=" * 80)
         print(" CCrawler Summary")
-        print("-" * 40)
+        print("-" * 80)
         self.statistics.get_summary()
-        print("=" * 40)
-
+        print("=" * 80)
+        self.statistics.write_to_file()
