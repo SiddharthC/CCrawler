@@ -107,7 +107,7 @@ class BaseSpider(BaseSpider):
                 anchors = hxs.select("//a")
                 next_candidate_urls = anchors.select("@href").extract()
                 title = hxs.select("//head/title/text()").extract()
-                body = "".join(hxs.select('//body/text()').extract())
+                body = "".join(hxs.select('//body//text()').extract())
         
                 item = BaseItem()
                 item['id'] = current_visit_url
