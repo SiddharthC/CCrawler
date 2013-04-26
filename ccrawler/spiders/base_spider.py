@@ -54,6 +54,8 @@ class BaseSpider(BaseSpider):
         start_urls_list = []
         self.urls_manager = UrlsManager()
         
+        i=1
+
         with open(urls_list_path, "r") as urls:
             for line in urls:
                 if re.match("^#", line):
@@ -72,8 +74,9 @@ class BaseSpider(BaseSpider):
                             # CHECKME: If urlopen tries to non-exist url, then it may raise an exception. 
                             ret = urllib2.urlopen(pre_crawldb_path)
                             if ret.getcode() == 200:  # ccrawler file exists. Skip normal crawl...
+                                i += 1
                                 rcopy_local = open(rdir+'/remote_data/' + 'remote_crawl_data-' + str(
-                                   int(time.time())) + '.json', 'w')
+                                   int(time.time())) + str(i) + '.json', 'w')
                                 rcopy_local.write('<crawlRemoteURL>' + current_visit_url + '</crawlRemoteURL>\n')
                                 rcopy_local.write(ret.read())
                                 rcopy_local.close()
