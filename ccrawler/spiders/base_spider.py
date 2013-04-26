@@ -174,7 +174,7 @@ class BaseSpider(BaseSpider):
         
         
     def item_spider_closed(self, spider, reason):
-        self.statistics.set_end_time()
+        self.statistics.finalize_stat(self.urls_manager.visited_urls)
         print ("\n")
         print("=" * 80)
         print(" CCrawler Summary")

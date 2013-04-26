@@ -48,7 +48,7 @@ class Statistics:
     def item_response_received(self, response, request, spider):
         self.response_time = time.time()
         logging.info("Response time: %f" % self.response_time)
-        if self.url == response.url and self.start_time_checked is True:
+        if True: #self.url == response.url and self.start_time_checked is True:
             download_time = self.get_item_download_time() * 1000.0
             elapsed_time = self.get_item_elapsed_time() * 1000.0
             logging.info("Elpased Downloaded time %0.2f ms" % download_time)        
@@ -86,21 +86,23 @@ class Statistics:
     def set_start_time(self):
         self.start_time = time.time()
         
-    def set_end_time(self):
+    def finalize_stat(self, visited_url_list):
         self.end_time = time.time()
+        self.total_number_of_urls = len(visited_url_list)
         
     def get_summary(self):
         self.stat_summary = (self.total_number_of_urls, self.total_response_size, self.total_download_time, self.total_elapsed_time)
         print (self.initial_urls)
         print ("Total # of URLs: %d\n"
-               "Total Response size: %d bytes\n"
-               "Total Downloadtime: %.2f ms\n"
-               "Total Elapsed (Response - Request) Time: %.2f ms" %
-               self.stat_summary)
+               "Total Response size: %d bytes"
+               #"Total Downloadtime: %.2f ms\n"
+               #"Total Elapsed (Response - Request) Time: %.2f ms"
+               %
+               (self.stat_summary[0], self.stat_summary[1]))
+        print ("Total CCrawling Time: %.2f ms\n" % ((self.end_time - self.start_time) * 1000.0))
         if self.total_number_of_urls > 0:
-            print ("Average Elapsed Time: %.2f ms" % (self.total_elapsed_time / self.total_number_of_urls))
+            print ("Average Elapsed Time: %.2f ms" % (self.end_time / self.total_number_of_urls))
             print ("Average Resonse Size: %.2f bytes" % (self.total_response_size / float(self.total_number_of_urls)))
-            print ("Total CCrawling Time: %.2f ms" % ((self.end_time - self.start_time) * 1000.0))
         return self.stat_summary
     
     def write_to_file(self, stat_dir = "stat"):
